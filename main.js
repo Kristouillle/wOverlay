@@ -6,7 +6,7 @@ let imageWindow;
 
 app.on("ready", () => {
   toolbarWindow = new BrowserWindow({
-    width: 500,
+    width: 600,
     height: 60,
     minHeight: 60,
     maxHeight: 60, // empêche resize vertical
@@ -23,7 +23,7 @@ app.on("ready", () => {
   toolbarWindow.loadFile("toolbar.html");
 
   imageWindow = new BrowserWindow({
-    width: 500,
+    width: 600,
     height: 300,
     frame: false,
     transparent: true,
