@@ -1,0 +1,27 @@
+{
+  "name": "w-overlay",
+  "version": "1.0.0",
+  "description": "Simple app to overlay any image with the option to pixelize it using only wplace.live color palette",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kristouillle/wOverlay.git"
+  },
+  "keywords": [
+    "wplace"
+  ],
+  "author": "ChrisV",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kristouillle/wOverlay/issues"
+  },
+  "homepage": "https://github.com/Kristouillle/wOverlay#readme",
+  "dependencies": {
+    "canvas": "^3.1.2",
+    "electron": "^37.2.6"
+  }
+}

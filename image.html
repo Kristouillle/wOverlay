@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Image</title>
+  <style>
+    body {
+      margin: 0;
+      background: transparent;
+      overflow: hidden;
+    }
+    img {
+      width: 100%;
+      height: auto;
+      opacity: 0.5;
+      display: block;
+      pointer-events: none; /* clickthrough */
+    }
+  </style>
+</head>
+<body>
+  <img id="overlayImage" />
+  <script>
+    window.electronAPI.onSetImage((data) => {
+      document.getElementById("overlayImage").src = data.filePath;
+      window.aspect = data.aspect;
+    });
+  </script>
+</body>
+</html>

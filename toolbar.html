@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Toolbar</title>
+  <style>
+    body {
+      margin: 0;
+      background: #303030;
+      color: white;
+      -webkit-app-region: drag;
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    button {
+      -webkit-app-region: no-drag;
+      margin-right: 10px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+  <button id="selectImageBtn">Select image</button>
+  <script>
+    document.getElementById("selectImageBtn").addEventListener("click", async () => {
+      const filePath = await window.electronAPI.selectImage();
+      if (filePath) {
+        const img = new Image();
+        img.src = filePath;
+        img.onload = () => {
+          const aspect = img.height / img.width;
+          window.electronAPI.updateImage({ filePath, aspect });
+        };
+      }
+    });
+  </script>
+</body>
+</html>
