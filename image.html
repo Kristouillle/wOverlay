@@ -14,7 +14,7 @@
       height: auto;
       display: block;
       pointer-events: none;
-      opacity: 0.5;
+      opacity: 0.5;;
     }
   </style>
 </head>
@@ -38,6 +38,7 @@
     let img = new Image();
     let pixelate = false;
     let pixelSize = 10;
+    let currentOpacity = 0.5;
 
     window.electronAPI.onSetImage((data) => {
       img.src = data.filePath;
@@ -53,6 +54,15 @@
       pixelSize = size;
       drawImage();
     });
+
+    window.electronAPI.onOpacity((opacity) => {
+      console.log("Opacity event reçu avec:", opacity);
+      currentOpacity = opacity;
+      canvas.style.opacity = currentOpacity;
+    });
+
+
+
 
     function nearestColor(r, g, b) {
       let minDist = Infinity;

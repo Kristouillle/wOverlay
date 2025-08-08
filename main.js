@@ -66,6 +66,10 @@ ipcMain.on("set-pixel-size", (event, size) => {
   imageWindow.webContents.send("set-pixel-size", size);
 });
 
+ipcMain.on("set-opacity", (event, opacity) => {
+  imageWindow.webContents.send("set-opacity", opacity);
+});
+
 
 ipcMain.on("close-app", () => {
   app.quit();

@@ -11,7 +11,7 @@
       -webkit-app-region: drag;
       display: flex;
       align-items: center;
-      padding: 10px;
+      padding: 5px 15px 5px 15px;
       box-sizing: border-box;
       gap: 10px;
     }
@@ -35,8 +35,12 @@
     <input type="checkbox" id="pixelateToggle"> Pixelize
   </label>
   <label>
-    Taille:
+    Tile size:
     <input type="range" id="pixelSizeSlider" min="2" max="50" value="10">
+  </label>
+  <label>
+    Opacity:
+    <input type="range" id="pixelOpacitySlider" min="1" max="10" value="5">
   </label>
   <div class="spacer"></div>
   <button id="closeBtn">X</button>
@@ -46,6 +50,7 @@
     const pixelateToggle = document.getElementById("pixelateToggle");
     const closeBtn = document.getElementById("closeBtn");
     const pixelSizeSlider = document.getElementById("pixelSizeSlider");
+    const pixelOpacitySlider = document.getElementById("pixelOpacitySlider");
 
     selectBtn.addEventListener("click", async () => {
       const filePath = await window.electronAPI.selectImage();
@@ -66,6 +71,15 @@
     pixelSizeSlider.addEventListener("input", (e) => {
       window.electronAPI.setPixelSize(parseInt(e.target.value, 10));
     });
+
+    pixelOpacitySlider.addEventListener("input", (e) => {
+      const opacityValue = parseInt(e.target.value, 10);
+      const normalizedOpacity = opacityValue / 10;
+      console.log("Opacité:", normalizedOpacity);
+      window.electronAPI.setOpacity(normalizedOpacity);
+
+    });
+
 
     closeBtn.addEventListener("click", () => {
       window.electronAPI.closeApp();
