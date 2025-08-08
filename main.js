@@ -8,6 +8,8 @@ app.on("ready", () => {
   toolbarWindow = new BrowserWindow({
     width: 500,
     height: 60,
+    minHeight: 60,
+    maxHeight: 60, // empêche resize vertical
     frame: false,
     transparent: false,
     resizable: true,
@@ -20,7 +22,6 @@ app.on("ready", () => {
 
   toolbarWindow.loadFile("toolbar.html");
 
-  // Créer la fenêtre image en tant qu'enfant
   imageWindow = new BrowserWindow({
     width: 500,
     height: 300,
@@ -38,7 +39,6 @@ app.on("ready", () => {
   imageWindow.setIgnoreMouseEvents(true, { forward: true });
   imageWindow.loadFile("image.html");
 
-  // Quand on resize la barre, on update la largeur de l'image
   toolbarWindow.on("resize", syncImageSize);
   toolbarWindow.on("move", syncImageSize);
 });
@@ -58,16 +58,27 @@ ipcMain.on("update-image", (event, data) => {
   syncImageSize();
 });
 
+ipcMain.on("toggle-pixelate", (event, enabled) => {
+  imageWindow.webContents.send("toggle-pixelate", enabled);
+});
+
+ipcMain.on("set-pixel-size", (event, size) => {
+  imageWindow.webContents.send("set-pixel-size", size);
+});
+
+
+ipcMain.on("close-app", () => {
+  app.quit();
+});
+
 function syncImageSize() {
   if (!imageWindow || !toolbarWindow) return;
-  const [x, y] = toolbarWindow.getBounds().x
-    ? [toolbarWindow.getBounds().x, toolbarWindow.getBounds().y]
-    : [0, 0];
+  const [x, y] = [toolbarWindow.getBounds().x, toolbarWindow.getBounds().y];
   const { width, height } = toolbarWindow.getBounds();
 
   imageWindow.setBounds({
     x,
-    y: y + height, // juste sous la barre
+    y: y + height,
     width,
     height: Math.round(width * (imageWindow.aspect || 0.6))
   });

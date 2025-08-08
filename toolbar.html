@@ -13,18 +13,41 @@
       align-items: center;
       padding: 10px;
       box-sizing: border-box;
+      gap: 10px;
+    }
+    button, label, input {
+      -webkit-app-region: no-drag;
     }
     button {
-      -webkit-app-region: no-drag;
-      margin-right: 10px;
       padding: 5px 10px;
+    }
+    .spacer {
+      flex-grow: 1;
+    }
+    input[type=range] {
+      width: 100px;
     }
   </style>
 </head>
 <body>
   <button id="selectImageBtn">Select image</button>
+  <label>
+    <input type="checkbox" id="pixelateToggle"> Pixeliser
+  </label>
+  <label>
+    Taille:
+    <input type="range" id="pixelSizeSlider" min="2" max="50" value="10">
+  </label>
+  <div class="spacer"></div>
+  <button id="closeBtn">X</button>
+
   <script>
-    document.getElementById("selectImageBtn").addEventListener("click", async () => {
+    const selectBtn = document.getElementById("selectImageBtn");
+    const pixelateToggle = document.getElementById("pixelateToggle");
+    const closeBtn = document.getElementById("closeBtn");
+    const pixelSizeSlider = document.getElementById("pixelSizeSlider");
+
+    selectBtn.addEventListener("click", async () => {
       const filePath = await window.electronAPI.selectImage();
       if (filePath) {
         const img = new Image();
@@ -34,6 +57,18 @@
           window.electronAPI.updateImage({ filePath, aspect });
         };
       }
+    });
+
+    pixelateToggle.addEventListener("change", (e) => {
+      window.electronAPI.togglePixelate(e.target.checked);
+    });
+
+    pixelSizeSlider.addEventListener("input", (e) => {
+      window.electronAPI.setPixelSize(parseInt(e.target.value, 10));
+    });
+
+    closeBtn.addEventListener("click", () => {
+      window.electronAPI.closeApp();
     });
   </script>
 </body>

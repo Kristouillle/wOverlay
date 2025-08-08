@@ -9,22 +9,95 @@
       background: transparent;
       overflow: hidden;
     }
-    img {
+    canvas {
       width: 100%;
       height: auto;
-      opacity: 0.5;
       display: block;
-      pointer-events: none; /* clickthrough */
+      pointer-events: none;
+      opacity: 0.5;
     }
   </style>
 </head>
 <body>
-  <img id="overlayImage" />
+  <canvas id="canvas"></canvas>
   <script>
+    const palette = [
+      [0,0,0],[60,60,60],[120,120,120],[210,210,210],[255,255,255],
+      [96,0,24],[237,28,36],[255,127,39],[246,170,9],[249,221,59],[255,250,188],
+      [15,185,104],[19,230,123],[135,255,94],
+      [12,129,110],[16,174,166],[19,225,190],
+      [40,80,158],[64,147,228],[96,247,242],
+      [107,80,246],[153,177,251],
+      [120,12,153],[170,56,185],[224,159,249],
+      [203,0,122],[236,31,128],[243,141,169],
+      [104,70,52],[149,104,42],[248,178,119]
+    ];
+
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let img = new Image();
+    let pixelate = false;
+    let pixelSize = 10;
+
     window.electronAPI.onSetImage((data) => {
-      document.getElementById("overlayImage").src = data.filePath;
-      window.aspect = data.aspect;
+      img.src = data.filePath;
+      img.onload = () => drawImage();
     });
+
+    window.electronAPI.onTogglePixelate((state) => {
+      pixelate = state;
+      drawImage();
+    });
+
+    window.electronAPI.onPixelSize((size) => {
+      pixelSize = size;
+      drawImage();
+    });
+
+    function nearestColor(r, g, b) {
+      let minDist = Infinity;
+      let best = palette[0];
+      for (let [pr, pg, pb] of palette) {
+        let dr = r - pr;
+        let dg = g - pg;
+        let db = b - pb;
+        let dist = dr*dr + dg*dg + db*db;
+        if (dist < minDist) {
+          minDist = dist;
+          best = [pr, pg, pb];
+        }
+      }
+      return best;
+    }
+
+    function drawImage() {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      if (!pixelate) {
+        ctx.drawImage(img, 0, 0);
+        return;
+      }
+
+      const tmpCanvas = document.createElement("canvas");
+      tmpCanvas.width = Math.max(1, Math.floor(img.width / pixelSize));
+      tmpCanvas.height = Math.max(1, Math.floor(img.height / pixelSize));
+      const tmpCtx = tmpCanvas.getContext("2d");
+      tmpCtx.drawImage(img, 0, 0, tmpCanvas.width, tmpCanvas.height);
+
+      const imgData = tmpCtx.getImageData(0, 0, tmpCanvas.width, tmpCanvas.height);
+      for (let i = 0; i < imgData.data.length; i += 4) {
+        const [r, g, b] = nearestColor(imgData.data[i], imgData.data[i+1], imgData.data[i+2]);
+        imgData.data[i] = r;
+        imgData.data[i+1] = g;
+        imgData.data[i+2] = b;
+      }
+      tmpCtx.putImageData(imgData, 0, 0);
+
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(tmpCanvas, 0, 0, tmpCanvas.width, tmpCanvas.height, 0, 0, canvas.width, canvas.height);
+    }
   </script>
 </body>
 </html>
